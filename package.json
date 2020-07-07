@@ -1,0 +1,11 @@
+{
+  "name": "ecommerce-mern",
+  "version": "1.0.0",
+  "description": "Its an ECommerce site having various functionalities including adding the ptoduct to cart, payment gateway etc",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Asit",
+  "license": "ISC"
+}
