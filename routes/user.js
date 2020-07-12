@@ -1,7 +1,8 @@
 const {userById}=require("../controllers/user");
-const {requireSignInForAuth}=require("../controllers/auth");
+const {requireSignInForAuth, isAuth, isAdmin}=require("../controllers/auth");
 
 const express=require("express");
+const { TokenExpiredError } = require("jsonwebtoken");
 // const expressJwt=require("express-jwt"); // for authorisation check
 
 const router=express.Router();
@@ -9,8 +10,10 @@ const router=express.Router();
 
 router.param('userid', userById);
 
-router.get("/secret/:userid",requireSignInForAuth, (req, res)=>{
-    console.log("REQUEST PARAMS..", req.profile)
+// Here below to test the isAdmin and isAuth functionality you have to go to postman and login first then u 
+// will get a Token, in the requestProfile add the token in the headers as 
+// Authorization: Bearer "ur token not in double quotes" and send the request
+router.get("/secret/:userid",requireSignInForAuth,isAuth, isAdmin, (req, res)=>{
     res.status(200).json({
         user:req.profile
         // user:req.profile

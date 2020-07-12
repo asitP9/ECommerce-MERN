@@ -6,10 +6,12 @@ const bodyParser=require("body-parser");
 const cookieParser=require("cookie-parser");
 const expressValidator = require("express-validator");
 
+
 // import routes
 const authRoutes=require("./routes/auth");
 const userRoutes=require("./routes/user");
-
+const categoryRoutes=require("./routes/category");
+const productRoutes=require("./routes/product");
 
 dotenv.config();
 
@@ -34,6 +36,8 @@ app.use(expressValidator());
 
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
+app.use("/api", categoryRoutes);
+app.use("/api", productRoutes);
 
 const PORT=process.env.PORT || 8080;
 

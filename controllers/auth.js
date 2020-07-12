@@ -71,6 +71,33 @@ exports.signout=(req, res)=>{
 }
 
 
+// This function will check if only the authorised user can check other users Credentials, he shouldn't be seeing
+exports.isAuth=(req, res, next)=>{
+    let user=req.profile && req.auth && req.profile.id===req.auth._id;
+
+    if(!user){
+        res.status(403).json(
+         { error: "Access Denied" }
+      )
+    }
+    next();
+}
+
+// This function will check if the logged in user is the admin
+
+exports.isAdmin=(req, res, next)=>{
+    console.log("I AM ADMIN");
+    if(req.profile.role === 0){
+        res.status(403).json({
+            error:"Admin Resource!!! Access Denied"
+        })
+    }
+    next();
+}
+
+
+
+
 // The following will use the cookie parser to protect the user who have signed in
 exports.requireSignIn=expressJwt({
     secret: process.env.JWT_SECRET,
