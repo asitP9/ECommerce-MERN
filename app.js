@@ -5,6 +5,7 @@ const mongoose=require("mongoose");
 const bodyParser=require("body-parser");
 const cookieParser=require("cookie-parser");
 const expressValidator = require("express-validator");
+const cors=require("cors");
 
 
 // import routes
@@ -29,11 +30,18 @@ const app = express();
 
 // middlewares
 app.use(morgan("dev"));
+
 // we get the json data from the request body
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(expressValidator());
 
+/* As our frontend and backend are in diffrent port ad frontend wants to communicate with the 
+backend, to avoid cross origin error, we need to use cors */ 
+app.use(cors())
+
+
+// Middleware Routers
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", categoryRoutes);

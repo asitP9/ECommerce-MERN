@@ -1,5 +1,5 @@
 const User=require("../models/user");
-const Product=require("../models/product");
+const { json } = require("body-parser");
 
 
 exports.userById=(req, res, next, id)=>{
@@ -14,14 +14,34 @@ exports.userById=(req, res, next, id)=>{
     })
 }
 
-exports.productById=(req, res, next, id)=>{
-    Product.findById(id).exec((err, product)=>{
-            if(err || !product){
-                return res.status(400).json({
-                    error:"Product not found"
+
+exports.read=(req, res)=>{
+    req.profile.hashed_password=undefined;
+    req.profile.salt-undefined;
+    res.json(
+        req.profile
+)}
+
+exports.update=(req, res)=>{
+    User.findOneAndUpdate(
+        {_id: req.profile._id},
+        {$set: req.body},
+        {new: true, useFindAndModify: false},
+        (err, user)=>{
+            if(err){
+                json.status(400).json({
+                    error:"You are not authorized to perform this action"
                 })
             }
-            req.product=product;
-            next();
-        })
-} 
+            user.hashed_password=undefined;
+            user.salt=undefined;
+            res.json(user);
+        }
+    )
+    const profile=req.profile;
+    profile.name=req.body.name;
+    profile.email=req.body.email;
+    profile.password=req.body.password;
+    profile.about=req.body.about;
+    profile.role=-req.body.role;
+}

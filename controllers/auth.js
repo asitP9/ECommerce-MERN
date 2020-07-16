@@ -12,7 +12,7 @@ exports.signup=(req, res)=>{
    user.save((err, user)=>{
        if(err){
            return res.status(400).json(
-               { err: errorHandler(err) }
+               { error: errorHandler(err) }
             )
        }
        user.hashed_password=undefined;
@@ -37,29 +37,31 @@ exports.signin=(req, res)=>{
         if(err||!user){
             return res.status(400).json(
                { error:"User with that email doesn't exist!! Please Signup" }
+
             )
         }
 
 
         // If the user is found, make sure that the email and password match
         // create authenticate method in user model
-        if(!user.authenticate(password)){
+        else if(!user.authenticate(password)){
             res.status(401).json({
                 error:"Email and password dont match"
             })
         }
+        else{
+            // generate a signed token with user id and secret
+            const token=jwt.sign({_id: user._id}, process.env.JWT_SECRET);
 
-        // generate a signed token with user id and secret
-        const token=jwt.sign({_id: user._id}, process.env.JWT_SECRET);
+            // persist the token as t (any character) in cookie with the expiry date
+            res.cookie('t', token, {expire: new Date()+9999} );
 
-        // persist the token as t (any character) in cookie with the expiry date
-        res.cookie('t', token, {expire: new Date()+9999} );
-
-        // return response with user and token to frontend clients
-        const {_id, name, email, role} = user;
-        return res.json({token,
-            user:{_id, name, email, role},
-        })
+            // return response with user and token to frontend clients
+            const {_id, name, email, role} = user;
+            return res.json({token,
+                user:{_id, name, email, role},
+            })
+        }
     })
 }
 
