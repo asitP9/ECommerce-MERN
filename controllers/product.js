@@ -45,11 +45,11 @@ exports.create=(req, res)=>{
 
         product.save((err, result)=>{
             if(err){
-                res.status(400).json({
+                return res.status(400).json({
                     error: errorHandler(err)
                 })
             }
-            res.json({
+            return res.json({
                 result
             })
         })
@@ -160,11 +160,11 @@ exports.list=(req, res)=>{
     .limit(limit)
     .exec((err, products)=>{
         if(err){
-            res.status(400).json({
+            return res.status(400).json({
                 error: "Products not found.."
             })
         }
-        res.json(products);
+        return res.json(products);
     })
 }
 
