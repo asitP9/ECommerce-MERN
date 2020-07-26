@@ -34,7 +34,6 @@ exports.create=(req, res)=>{
 
         // 1 KB = 1000
         if(files.photo){
-            // console.log("FILE PHOTO DETAILS => ",files.photo)
             if(files.photo.size>1000000)//more than 1 MB
                 return res.status(400).json({
                     error:"Image should be less than 1 MB size"
@@ -58,14 +57,16 @@ exports.create=(req, res)=>{
 }
 
 exports.productById=(req, res, next, id)=>{
-    Product.findById(id).exec((err, product)=>{
-            if(err || !product){
-                return res.status(400).json({
-                    error:"Product not found"
-                })
-            }
-            req.product=product;
-            next();
+    Product.findById(id)
+                .populate("category")
+                .exec((err, product)=>{
+                    if(err || !product){
+                        return res.status(400).json({
+                            error:"Product not found"
+                        })
+                    }
+                    req.product=product;
+                    next();
         })
 }   
 
@@ -116,7 +117,6 @@ exports.productById=(req, res, next, id)=>{
 
             // 1 KB = 1000
             if(files.photo){
-                // console.log("FILE PHOTO DETAILS => ",files.photo)
                 if(files.photo.size>1000000)//more than 1 MB
                     return res.status(400).json({
                         error:"Image should be less than 1 MB size"
@@ -223,8 +223,6 @@ exports.listBySearch = (req, res) => {
     let skip = parseInt(req.body.skip);
     let findArgs = {};
  
-    // console.log(order, sortBy, limit, skip, req.body.filters);
-    // console.log("findArgs", findArgs);
  
     for (let key in req.body.filters) {
         if (req.body.filters[key].length > 0) {
@@ -262,10 +260,37 @@ exports.listBySearch = (req, res) => {
 
 // Be cautious of res.send and res.json if json, it wont be able to fetch the image
 exports.photo=(req, res, next)=>{
-    console.log(req.product.photo);
     if(req.product.photo.data){
         res.set("Content-Type", req.product.photo.contentType);
         return res.send(req.product.photo.data);
     }
     next();
+}
+
+
+exports.listSearch=(req, res)=>{
+// Create query object to hold search value and category value
+    const query={};
+
+// assign search value to query.name
+    if(req.query.search){
+        query.name={$regex: req.query.search, $options:"i"}
+
+// Assign category value to query.category
+    if(req.query.category && req.query.category!="All"){
+        query.category=req.query.category;        
+    }
+
+// Find the product based on query object with 2 properties Search and Category 
+    Product.find(query, (err, products)=>{
+        if(err){
+            return res.status(400).json({
+                error: errorHandler(err)
+            })
+        }
+        res.json(products)
+        
+    }).select("-photo");
+    }
+
 }

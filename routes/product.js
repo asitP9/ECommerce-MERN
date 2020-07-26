@@ -1,6 +1,6 @@
 const {userById}=require("../controllers/user");
 const {requireSignInForAuth, isAuth, isAdmin}=require("../controllers/auth");
-const {create,productById, read, remove, update, list, listRelated, listCategories, listBySearch, photo}
+const {create,productById, read, remove, update, list, listRelated, listCategories, listBySearch, photo, listSearch}
         =require("../controllers/product");
 
 const express=require("express");
@@ -23,7 +23,7 @@ router.get("/products/categories", listCategories);
 router.post("/products/by/search", listBySearch);
 
 router.get("/product/photo/:productid", photo);
-
+router.get("/products/search/", listSearch)
 
 router.param('userid', userById);
 router.param('productid', productById);
